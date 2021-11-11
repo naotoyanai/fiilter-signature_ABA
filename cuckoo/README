@@ -1,0 +1,4 @@
+Install Cuckoo Filter 
+https://github.com/efficient/cuckoofilter
+Replace "test.cc" with this file in the "example" folder. 
+Type "make"

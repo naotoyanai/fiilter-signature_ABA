@@ -1,4 +1,9 @@
-Install Cuckoo Filter 
-https://github.com/efficient/cuckoofilter
-Replace "test.cc" with this file in the "example" folder. 
-Type "make"
+## Install Instruction
+We implemented ABA by utilizing **g++ 7.5.0** and **OpenSSL 1.1.1** on Ubuntu 18.04.5 LTS with Windows Subsyste for Linux. 
+You may need to install **libssl-dev 1.1.1**. 
+Install Cuckoo Filter (https://github.com/efficient/cuckoofilter). 
+
+### Execute 
+1. Replace "test.cc" with this file in the "example" folder. 
+2. Type `make`
+3. Run an executable file output by `make`

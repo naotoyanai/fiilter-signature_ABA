@@ -204,9 +204,12 @@ int main() {
     test_vf_with_padding();
     test_batch();
 
+    #define MESSAGE (const unsigned char *) "test"
+    #define MESSAGE_LEN 4
+
     unsigned char pk[crypto_sign_PUBLICKEYBYTES];
     unsigned char sk[crypto_sign_SECRETKEYBYTES];
-    crypto_sign_keypair(pk, sk);loss
+    crypto_sign_keypair(pk, sk);
 
     unsigned char signed_message[crypto_sign_BYTES + MESSAGE_LEN];
     unsigned long long signed_message_len;

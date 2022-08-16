@@ -3,6 +3,7 @@
 ### List of Files
 1. `test.cpp`: scheme based on Vacuum filter (https://github.com/wuwuz/Vacuum-Filter). 
 2. `makefile`: file for the compilation 
+3. `test_building.cpp`: a test program for the building environment. 
 
 
 

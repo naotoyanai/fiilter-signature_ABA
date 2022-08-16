@@ -1,4 +1,4 @@
 # fiilter-signature_ABA
 
 ### List of Files
-1. `cuckoofilter`: scheme based on cuckoo filter (https://github.com/efficient/cuckoofilter). 
+1. `Vacuumfilter`: scheme based on Vacuum filter (https://github.com/wuwuz/Vacuum-Filter). 

@@ -11,6 +11,8 @@
 #include <sodium.h> /* g++ opition: -lsodium */
 #include <string.h>
 
+#define MESSAGE (const unsigned char *) "test"
+#define MESSAGE_LEN 4
 
 
 using namespace std;
@@ -28,6 +30,7 @@ void random_gen_1(int n, uint64_t** store, mt19937& rd) {
     for (int i = 0; i < n; i++)
         (*store)[i] = (uint64_t(rd()) << 32) + rd();
 }
+
 void test_vf_no_padding() {
 
     /*
@@ -38,7 +41,7 @@ void test_vf_no_padding() {
 
     cout << "Testing vacuum filter(no padding)..." << endl;
 
-    int n = 1 << 25; /* number of inserted keys */
+    int n = 100; /* number of inserted keys --> the size of Dv */
     int q = 10000000; /* number of queries */
 
     cout << "Keys number = " << n << endl;
@@ -51,6 +54,24 @@ void test_vf_no_padding() {
     random_gen(q, alienKey, rd);
 
     VacuumFilter<uint16_t, 16> vf;
+
+    /* Setup: Generation of Crypto keys */
+    unsigned char pk[crypto_sign_PUBLICKEYBYTES];
+    unsigned char sk[crypto_sign_SECRETKEYBYTES];
+    crypto_sign_keypair(pk, sk);
+
+    unsigned char signed_message[crypto_sign_BYTES + MESSAGE_LEN];
+    unsigned long long signed_message_len;
+
+    crypto_sign(signed_message, &signed_message_len,
+            MESSAGE, MESSAGE_LEN, sk);
+
+    printf("%s\n", signed_message);
+    printf("%s\n", MESSAGE);
+
+
+    /* KeyGen */
+
 
     /* vf.init(max_item_numbers, slots per bucket, max_kick_steps) */
     vf.init(n, 4, 400);
@@ -204,9 +225,8 @@ int main() {
     test_vf_with_padding();
     test_batch();
 
-    #define MESSAGE (const unsigned char *) "test"
-    #define MESSAGE_LEN 4
 
+/*
     unsigned char pk[crypto_sign_PUBLICKEYBYTES];
     unsigned char sk[crypto_sign_SECRETKEYBYTES];
     crypto_sign_keypair(pk, sk);
@@ -219,7 +239,7 @@ int main() {
 
     printf("%s\n", signed_message);
     printf("%s\n", MESSAGE);
-
+*/
 
     return 0;
 }

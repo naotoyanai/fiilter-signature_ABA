@@ -17,6 +17,7 @@
 #define MESSAGE_LEN 5
 
 
+
 using namespace std;
 
 /* generate n 64-bit random numbers */
@@ -101,14 +102,19 @@ void test_vf_no_padding() {
 
     unsigned char unsigned_message[MESSAGE_LEN];
     unsigned long long unsigned_message_len;
+
     if (crypto_sign_open(unsigned_message, &unsigned_message_len, signed_message, 
-        signed_message_len, pk) != 0) {
+        signed_message_len, pk) != 0) { /* checking signature verification */
+        printf("incorrect signature!\n");
         /* incorrect signature! */
     }
 
-    for (int i = 0; i < n; i++)
-        if (vf.lookup(insKey[i]) == false)
+    for (int i = 0; i < n; i++) 
+        if (vf.lookup(insKey[i]) == false){ /* checking insKey[i] by Lookup*/
             cout << "False negative happens at " << i << "th key: " << insKey[i] << endl;
+            printf("incrrect AMQ!\n");
+            break;
+        }
     
     int false_positive_cnt = 0;
 

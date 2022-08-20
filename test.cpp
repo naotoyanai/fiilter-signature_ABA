@@ -10,9 +10,11 @@
 
 #include <sodium.h> /* g++ opition: -lsodium */
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #define MESSAGE (const unsigned char *) "test"
-#define MESSAGE_LEN 4
+#define MESSAGE_LEN 5
 
 
 using namespace std;
@@ -65,10 +67,6 @@ void test_vf_no_padding() {
     unsigned char signed_message[crypto_sign_BYTES + MESSAGE_LEN];
     unsigned long long signed_message_len;
 
-    crypto_sign(signed_message, &signed_message_len,
-            MESSAGE, MESSAGE_LEN, sk);
-
-    printf("%s\n", signed_message);
     printf("%s\n", MESSAGE);
 
 
@@ -77,14 +75,36 @@ void test_vf_no_padding() {
     random_gen(q, alienKey, rd);
 
 
-    /* vf.init(max_item_numbers, slots per bucket, max_kick_steps) */
-    vf.init(n, 4, 400);
+    /* Sign */ 
+
+    crypto_sign(signed_message, &signed_message_len, MESSAGE, MESSAGE_LEN, sk);
+    printf("%s\n", signed_message);
+
+    
+    vf.init(n, 4, 400); /* vf.init(max_item_numbers, slots per bucket, max_kick_steps) 
+        --> Gen of Vacuum */
 
     for (int i = 0; i < n; i++)
         if (vf.insert(insKey[i]) == false)
             cout << "Insertion fails when inserting " << i << "th key: " << insKey[i] << endl;
 
+    int T = static_cast<int>(vf.get_load_factor()) * 100;
+    printf("T: %d\n", T); /* for debug */
+
+    /* cast from AMQ to message as m||T 
+    MESSAGE << T;
+    */
     cout << "Load factor = " << vf.get_load_factor() << endl;
+
+
+    /* Verify */
+
+    unsigned char unsigned_message[MESSAGE_LEN];
+    unsigned long long unsigned_message_len;
+    if (crypto_sign_open(unsigned_message, &unsigned_message_len, signed_message, 
+        signed_message_len, pk) != 0) {
+        /* incorrect signature! */
+    }
 
     for (int i = 0; i < n; i++)
         if (vf.lookup(insKey[i]) == false)
@@ -115,7 +135,7 @@ void test_vf_with_padding() {
 
     cout << "Testing vacuum filter(with padding)..." << endl;
 
-    int n = 100; /* number of inserted keys */
+    int n = 100; /* number of inserted keys --> the size of Dv */
     int q = 10000000; /* number of queries */
 
     cout << "Keys number = " << n << endl;

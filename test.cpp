@@ -42,7 +42,7 @@ void test_vf_no_padding() {
     cout << "Testing vacuum filter(no padding)..." << endl;
 
     int n = 100; /* number of inserted keys --> the size of Dv */
-    int q = 10000000; /* number of queries */
+    int q = 10000000; /* number of queries */ 
 
     cout << "Keys number = " << n << endl;
     cout << "Queries number = " << q << endl;
@@ -50,8 +50,10 @@ void test_vf_no_padding() {
     mt19937 rd(12821);
     vector<uint64_t> insKey;
     vector<uint64_t> alienKey;
+    /*
     random_gen(n, insKey, rd);
     random_gen(q, alienKey, rd);
+    */
 
     VacuumFilter<uint16_t, 16> vf;
 
@@ -71,6 +73,8 @@ void test_vf_no_padding() {
 
 
     /* KeyGen */
+    random_gen(n, insKey, rd); /* unique value for uint64_t as vk_id */
+    random_gen(q, alienKey, rd);
 
 
     /* vf.init(max_item_numbers, slots per bucket, max_kick_steps) */
@@ -111,7 +115,7 @@ void test_vf_with_padding() {
 
     cout << "Testing vacuum filter(with padding)..." << endl;
 
-    int n = 1 << 25; /* number of inserted keys */
+    int n = 100; /* number of inserted keys */
     int q = 10000000; /* number of queries */
 
     cout << "Keys number = " << n << endl;

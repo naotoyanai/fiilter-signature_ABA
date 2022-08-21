@@ -1,3 +1,4 @@
+#pragma once
 #include <bits/stdc++.h>
 #include <time.h>
 #include <unistd.h>
@@ -65,6 +66,9 @@ void test_vf_no_padding() { /* Vacuum from scratch */
     mt19937 rd(12821);
     vector<uint64_t> insKey;
     vector<uint64_t> alienKey;
+    
+    random_gen(q, alienKey, rd);
+
     /*
     random_gen(n, insKey, rd);
     random_gen(q, alienKey, rd);
@@ -96,22 +100,44 @@ void test_vf_no_padding() { /* Vacuum from scratch */
 
 
     unsigned char hash[crypto_generichash_BYTES];
+    /*
+    unsigned char value[sizeof(insKey)];
+    */
+
+    std::cout << "debug before sizeof\n" << endl;
 
     /* hash-and-sign paradigm for Signing on m||Dv */
+
+    /* 
+    for (int i=0; i <n; i++ ){
+        std::memcpy(value,&insKey[i],sizeof(insKey[i]));
+    }
+    */ 
+    std::cout << "debug after sizeof\n" << endl;
+    
+    std::cout << "debug before hash\n" << endl;
+    /* original hash function 
     crypto_generichash(hash, sizeof hash, MESSAGE, MESSAGE_LEN, NULL, 0);
-    crypto_sign(signed_message, &signed_message_len, hash, sizeof hash, sk);
+    */
+    crypto_generichash(hash, sizeof hash, MESSAGE, MESSAGE_LEN, NULL, 0);
+    std::cout << "debug after hash\n" << endl;
+    /* delete[] value;    */
+
+    std::cout << "debug before sign\n" << endl;
+    crypto_sign(signed_message, &signed_message_len, MESSAGE, MESSAGE_LEN, sk);
+    std::cout << "debug after sign\n" << endl;
+
+    /* printDump(const unsigned char *buff, int length, unsigned char *copy) */
 
     /* original sign function
     crypto_sign(signed_message, &signed_message_len, MESSAGE, MESSAGE_LEN, sk);
     std::cout << "cout: " << hash << endl;
+    printf("hash output::: %s::%s\n", print_hex(hash, sizeof hash), MESSAGE);
 
     */
 
-    printf("hash output::: %s::%s\n", print_hex(hash, sizeof hash), MESSAGE);
 
-    /* for debug
     vf.init(n, 4, 400); 
-     */
 
     for (int i = 0; i < n; i++)
         if (vf.insert(insKey[i]) == false)
@@ -131,11 +157,15 @@ void test_vf_no_padding() { /* Vacuum from scratch */
     unsigned char unsigned_message[MESSAGE_LEN];
     unsigned long long unsigned_message_len;
 
+    cout << "debug before crypto_sign_open\n" << endl;
     if (crypto_sign_open(unsigned_message, &unsigned_message_len, signed_message, 
         signed_message_len, pk) != 0) { /* checking signature verification */
         printf("incorrect signature!\n");
         /* incorrect signature! */
     }
+
+
+    cout << "debug before lookup\n" << endl;
 
     for (int i = 0; i < n; i++) 
         if (vf.lookup(insKey[i]) == false) { /* checking insKey[i] by Lookup */

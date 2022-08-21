@@ -9,4 +9,4 @@ trivial: trivial.cpp vacuum.h hashutil.h
 	g++ $(CFLAGS) -Ofast -o trivial test.cpp -lsodium
 
 clean:
-	rm -f test
+	rm -f test trivial

@@ -15,7 +15,7 @@
 #include <iostream>
 
 #define MESSAGE (const unsigned char *) "test"
-#define MESSAGE_LEN 5
+#define MESSAGE_LEN 32
 
 
 
@@ -94,8 +94,20 @@ void test_vf_no_padding() { /* Vacuum from scratch */
     /* Sign */ 
 
 
+
+    unsigned char hash[crypto_generichash_BYTES];
+
+    /* hash-and-sign paradigm for Signing on m||Dv */
+    crypto_generichash(hash, sizeof hash, MESSAGE, MESSAGE_LEN, NULL, 0);
+    crypto_sign(signed_message, &signed_message_len, hash, sizeof hash, sk);
+
+    /* original sign function
     crypto_sign(signed_message, &signed_message_len, MESSAGE, MESSAGE_LEN, sk);
-    printf("%s\n", signed_message);
+    std::cout << "cout: " << hash << endl;
+
+    */
+
+    printf("hash output::: %s::%s\n", print_hex(hash, sizeof hash), MESSAGE);
 
     /* for debug
     vf.init(n, 4, 400); 

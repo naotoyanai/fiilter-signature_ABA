@@ -322,7 +322,10 @@ void test_batch() {
 
 
 int main() {
-    test_vf_no_padding();
+
+    for (int k = 0; k < 5; k ++) {
+        test_vf_no_padding();
+    }
     /* 
     test_vf_with_padding();
     test_batch(); 

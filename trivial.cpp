@@ -79,6 +79,7 @@ void test_vf_no_padding() { /* Vacuum from scratch */
 
     /* Setup: Generation of Crypto keys */
     getrusage(RUSAGE_SELF, &setup_start);
+
     unsigned char pk[crypto_sign_PUBLICKEYBYTES];
     unsigned char sk[crypto_sign_SECRETKEYBYTES];
     crypto_sign_keypair(pk, sk);
@@ -86,6 +87,7 @@ void test_vf_no_padding() { /* Vacuum from scratch */
     unsigned char signed_message[crypto_sign_BYTES + MESSAGE_LEN];
     unsigned long long signed_message_len;
 
+    getrusage(RUSAGE_SELF, &setup_end);
 
 
 
@@ -209,7 +211,10 @@ void test_vf_no_padding() { /* Vacuum from scratch */
 
 
 int main() {
-    test_vf_no_padding();
+
+    for (int k =0; k < 5; k++) {
+        test_vf_no_padding();
+    }
 
 
 /*

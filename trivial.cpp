@@ -177,32 +177,45 @@ void test_vf_no_padding() { /* Vacuum from scratch */
     /* cout << "debug before lookup\n" << endl; */
 
     getrusage(RUSAGE_SELF, &vrfy_end);
+    printf("Setup (user-time) \n");
+    printf("Setup (sys-time) \n");
 
-    printf("Setup (user-time) \t%lfs\n",
+    printf("KeyGen (user-time) \t%lf\n");
+    printf("KeyGen (sys-time) \t%lf\n");
+
+    printf("Sign (user-time) \t%lf\n");
+    printf("Sign (sys-time) \t%lf\n");
+
+    printf("Verify (user-time) \t%lf\n");
+    printf("Verify (sys-time) \t%lf\n");
+
+
+    printf("%lf\n",
         (setup_end.ru_utime.tv_sec  - setup_start.ru_utime.tv_sec) +
-        (setup_end.ru_utime.tv_usec - setup_start.ru_utime.tv_usec)*1.0E-6);
-    printf("Setup (sys-time) \t%lfs\n",
+        (setup_end.ru_utime.tv_usec - setup_start.ru_utime.tv_usec)*1.0E-6
+        );
+    printf("%lf\n",
         (setup_end.ru_stime.tv_sec  - setup_start.ru_stime.tv_sec) +
         (setup_end.ru_stime.tv_usec - setup_start.ru_stime.tv_usec)*1.0E-6);
 
-    printf("KeyGen (user-time) \t%lfs\n",
+    printf("%lf\n",
         (keygen_end.ru_utime.tv_sec  - keygen_start.ru_utime.tv_sec) +
         (keygen_end.ru_utime.tv_usec - keygen_start.ru_utime.tv_usec)*1.0E-6);
-    printf("KeyGen (sys-time) \t%lfs\n",
+    printf("%lf\n",
         (keygen_end.ru_stime.tv_sec  - keygen_start.ru_stime.tv_sec) +
         (keygen_end.ru_stime.tv_usec - keygen_start.ru_stime.tv_usec)*1.0E-6);
 
-    printf("Sign (user-time) \t%lfs\n",
+    printf("%lf\n",
         (sign_end.ru_utime.tv_sec  - sign_start.ru_utime.tv_sec) +
         (sign_end.ru_utime.tv_usec - sign_start.ru_utime.tv_usec)*1.0E-6);
-    printf("Sign (sys-time) \t%lfs\n",
+    printf("%lf\n",
         (sign_end.ru_stime.tv_sec  - sign_start.ru_stime.tv_sec) +
         (sign_end.ru_stime.tv_usec - sign_start.ru_stime.tv_usec)*1.0E-6);
 
-    printf("Verify (user-time) \t%lfs\n",
+    printf("%lf\n",
         (vrfy_end.ru_utime.tv_sec  - vrfy_start.ru_utime.tv_sec) +
         (vrfy_end.ru_utime.tv_usec - vrfy_start.ru_utime.tv_usec)*1.0E-6);
-    printf("Verify (sys-time) \t%lfs\n",
+    printf("%lf\n",
         (vrfy_end.ru_stime.tv_sec  - vrfy_start.ru_stime.tv_sec) +
         (vrfy_end.ru_stime.tv_usec - vrfy_start.ru_stime.tv_usec)*1.0E-6);
 

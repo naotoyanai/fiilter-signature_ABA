@@ -15,6 +15,10 @@
 #include <stdlib.h>
 #include <iostream>
 
+#include <sys/time.h>
+#include <sys/resource.h>
+
+
 #define MESSAGE (const unsigned char *) "test"
 #define MESSAGE_LEN 32
 int n = 100; /* number of users */
@@ -49,6 +53,8 @@ static void printDump(const unsigned char *buff, int length, unsigned char *copy
 
 void test_vf_no_padding() { /* Vacuum from scratch */
 
+    struct rusage setup_start, setup_end, keygen_start, keygen_end, 
+        sign_start, sign_end, vrfy_start, vrfy_end;
     /*
         We implemented VF_no_padding from scratch.
         It supports fingerprint length from 4 to 16 bits, but we recommend to use fingerprint longer than 8 bits.
@@ -72,6 +78,7 @@ void test_vf_no_padding() { /* Vacuum from scratch */
     VacuumFilter<uint16_t, 16> vf;
 
     /* Setup: Generation of Crypto keys */
+    getrusage(RUSAGE_SELF, &setup_start);
     unsigned char pk[crypto_sign_PUBLICKEYBYTES];
     unsigned char sk[crypto_sign_SECRETKEYBYTES];
     crypto_sign_keypair(pk, sk);
@@ -79,7 +86,7 @@ void test_vf_no_padding() { /* Vacuum from scratch */
     unsigned char signed_message[crypto_sign_BYTES + MESSAGE_LEN];
     unsigned long long signed_message_len;
 
-    printf("%s\n", MESSAGE);
+
 
 
     /* KeyGen */
@@ -87,21 +94,23 @@ void test_vf_no_padding() { /* Vacuum from scratch */
     random_gen(n, insKey, rd); 
     random_gen(q, alienKey, rd);
     */
-
+    getrusage(RUSAGE_SELF, &keygen_start);
     /* here is the output of measurement */
     random_gen(n, insKey, rd); /* Define Dv */
+    getrusage(RUSAGE_SELF, &keygen_end);
+
 
     /* Sign */ 
 
-
+    getrusage(RUSAGE_SELF, &sign_start);
 
     unsigned char hash[crypto_generichash_BYTES];
     /*
     unsigned char value[sizeof(insKey)];
     */
-
+    /* 
     std::cout << "debug before sizeof\n" << endl;
-
+    */
     /* hash-and-sign paradigm for Signing on m||Dv */
 
     /* 
@@ -109,9 +118,8 @@ void test_vf_no_padding() { /* Vacuum from scratch */
         std::memcpy(value,&insKey[i],sizeof(insKey[i]));
     }
     */ 
-    std::cout << "debug after sizeof\n" << endl;
     
-    std::cout << "debug before hash\n" << endl;
+    /*     std::cout << "debug before hash\n" << endl; */
     /* original hash function 
     crypto_generichash(hash, sizeof hash, MESSAGE, MESSAGE_LEN, NULL, 0);
     */
@@ -122,6 +130,7 @@ void test_vf_no_padding() { /* Vacuum from scratch */
     std::cout << "debug before sign\n" << endl;
     crypto_sign(signed_message, &signed_message_len, MESSAGE, MESSAGE_LEN, sk);
     std::cout << "debug after sign\n" << endl;
+
 
     /* printDump(const unsigned char *buff, int length, unsigned char *copy) */
 
@@ -134,6 +143,7 @@ void test_vf_no_padding() { /* Vacuum from scratch */
 
 
     int T = static_cast<int>(vf.get_load_factor()) * 100;
+    getrusage(RUSAGE_SELF, &sign_end);
     printf("T: %d\n", T); /* for debug */
 
     /* cast from AMQ to message as m||T 
@@ -145,7 +155,7 @@ void test_vf_no_padding() { /* Vacuum from scratch */
     /* Verify */
 
 
-
+    getrusage(RUSAGE_SELF, &vrfy_start);
     unsigned char unsigned_message[MESSAGE_LEN];
     unsigned long long unsigned_message_len;
 
@@ -154,7 +164,7 @@ void test_vf_no_padding() { /* Vacuum from scratch */
             cout << j <<"th key is correct" << endl;
 
 
-    cout << "debug before crypto_sign_open\n" << endl;
+    /* cout << "debug before crypto_sign_open\n" << endl; */
     if (crypto_sign_open(unsigned_message, &unsigned_message_len, signed_message, 
         signed_message_len, pk) != 0) { /* checking signature verification */
         printf("incorrect signature!\n");
@@ -162,14 +172,37 @@ void test_vf_no_padding() { /* Vacuum from scratch */
     }
 
 
-    cout << "debug before lookup\n" << endl;
+    /* cout << "debug before lookup\n" << endl; */
 
-    
-    int false_positive_cnt = 0;
+    getrusage(RUSAGE_SELF, &vrfy_end);
 
-    for (int i = 0; i < n; i++)
-        if (vf.del(insKey[i]) == false)
-            cout << "Deletion fails when inserting " << i << "th key: " << insKey[i] << endl;
+    printf("Setup (user-time) \t%lfs\n",
+        (setup_end.ru_utime.tv_sec  - setup_start.ru_utime.tv_sec) +
+        (setup_end.ru_utime.tv_usec - setup_start.ru_utime.tv_usec)*1.0E-6);
+    printf("Setup (sys-time) \t%lfs\n",
+        (setup_end.ru_stime.tv_sec  - setup_start.ru_stime.tv_sec) +
+        (setup_end.ru_stime.tv_usec - setup_start.ru_stime.tv_usec)*1.0E-6);
+
+    printf("KeyGen (user-time) \t%lfs\n",
+        (keygen_end.ru_utime.tv_sec  - keygen_start.ru_utime.tv_sec) +
+        (keygen_end.ru_utime.tv_usec - keygen_start.ru_utime.tv_usec)*1.0E-6);
+    printf("KeyGen (sys-time) \t%lfs\n",
+        (keygen_end.ru_stime.tv_sec  - keygen_start.ru_stime.tv_sec) +
+        (keygen_end.ru_stime.tv_usec - keygen_start.ru_stime.tv_usec)*1.0E-6);
+
+    printf("Sign (user-time) \t%lfs\n",
+        (sign_end.ru_utime.tv_sec  - sign_start.ru_utime.tv_sec) +
+        (sign_end.ru_utime.tv_usec - sign_start.ru_utime.tv_usec)*1.0E-6);
+    printf("Sign (sys-time) \t%lfs\n",
+        (sign_end.ru_stime.tv_sec  - sign_start.ru_stime.tv_sec) +
+        (sign_end.ru_stime.tv_usec - sign_start.ru_stime.tv_usec)*1.0E-6);
+
+    printf("Verify (user-time) \t%lfs\n",
+        (vrfy_end.ru_utime.tv_sec  - vrfy_start.ru_utime.tv_sec) +
+        (vrfy_end.ru_utime.tv_usec - vrfy_start.ru_utime.tv_usec)*1.0E-6);
+    printf("Verify (sys-time) \t%lfs\n",
+        (vrfy_end.ru_stime.tv_sec  - vrfy_start.ru_stime.tv_sec) +
+        (vrfy_end.ru_stime.tv_usec - vrfy_start.ru_stime.tv_usec)*1.0E-6);
 
     cout << endl;
 }

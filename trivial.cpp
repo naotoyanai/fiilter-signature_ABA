@@ -17,8 +17,8 @@
 
 #define MESSAGE (const unsigned char *) "test"
 #define MESSAGE_LEN 32
-
-
+int n = 100; /* number of users */
+int j =50; /* test index in verification */
 
 using namespace std;
 
@@ -55,19 +55,14 @@ void test_vf_no_padding() { /* Vacuum from scratch */
         This version aims at flexibility, so it is slower than VF_with_padding.
     */
 
-    cout << "Testing vacuum filter(no padding)..." << endl;
+    cout << "Testing trivial construction..." << endl;
 
-    int n = 100; /* number of inserted keys --> the size of Dv */
-    int q = 10000000; /* number of queries */ 
+    /* int n = 100; */ /* number of inserted keys --> the size of Dv */
 
     cout << "Keys number = " << n << endl;
-    cout << "Queries number = " << q << endl;
 
     mt19937 rd(12821);
     vector<uint64_t> insKey;
-    vector<uint64_t> alienKey;
-    
-    random_gen(q, alienKey, rd);
 
     /*
     random_gen(n, insKey, rd);
@@ -93,6 +88,7 @@ void test_vf_no_padding() { /* Vacuum from scratch */
     random_gen(q, alienKey, rd);
     */
 
+    /* here is the output of measurement */
     random_gen(n, insKey, rd); /* Define Dv */
 
     /* Sign */ 
@@ -137,12 +133,6 @@ void test_vf_no_padding() { /* Vacuum from scratch */
     */
 
 
-    vf.init(n, 4, 400); 
-
-    for (int i = 0; i < n; i++)
-        if (vf.insert(insKey[i]) == false)
-            cout << "Insertion fails when inserting " << i << "th key: " << insKey[i] << endl;
-
     int T = static_cast<int>(vf.get_load_factor()) * 100;
     printf("T: %d\n", T); /* for debug */
 
@@ -154,8 +144,15 @@ void test_vf_no_padding() { /* Vacuum from scratch */
 
     /* Verify */
 
+
+
     unsigned char unsigned_message[MESSAGE_LEN];
     unsigned long long unsigned_message_len;
+
+    for (int i = 0; i < n; i++)
+        if (insKey[i] == insKey[j])
+            cout << j <<"th key is correct" << endl;
+
 
     cout << "debug before crypto_sign_open\n" << endl;
     if (crypto_sign_open(unsigned_message, &unsigned_message_len, signed_message, 
@@ -167,21 +164,8 @@ void test_vf_no_padding() { /* Vacuum from scratch */
 
     cout << "debug before lookup\n" << endl;
 
-    for (int i = 0; i < n; i++) 
-        if (vf.lookup(insKey[i]) == false) { /* checking insKey[i] by Lookup */
-            cout << "False negative happens at " << i << "th key: " << insKey[i] << endl;
-            printf("incrrect AMQ!\n");
-            break;
-        }
     
     int false_positive_cnt = 0;
-
-    for (int i = 0; i < q; i++)
-        if (vf.lookup(alienKey[i]) == true)
-            false_positive_cnt++;
-
-    cout << "False positive rate = " << double(false_positive_cnt) / q << endl;
-    cout << "Bits per key = " << vf.get_bits_per_item() << endl;
 
     for (int i = 0; i < n; i++)
         if (vf.del(insKey[i]) == false)

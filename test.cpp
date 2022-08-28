@@ -131,7 +131,7 @@ void test_vf_no_padding() { /* Vacuum from scratch */
         if (vf.lookup(insKey[i]) == false) { /* checking insKey[i] by Lookup */
             cout << "False negative happens at " << i << "th key: " << insKey[i] << endl;
             printf("incrrect AMQ!\n");
-            break;
+            /*break;*/
         }
 
     getrusage(RUSAGE_SELF, &vrfy_end);
@@ -189,11 +189,11 @@ void test_vf_no_padding() { /* Vacuum from scratch */
 
     cout << "False positive rate = " << double(false_positive_cnt) / q << endl;
     cout << "Bits per key = " << vf.get_bits_per_item() << endl;
-
+/*
     for (int i = 0; i < n; i++)
         if (vf.del(insKey[i]) == false)
             cout << "Deletion fails when inserting " << i << "th key: " << insKey[i] << endl;
-
+*/
     cout << endl;
 }
 

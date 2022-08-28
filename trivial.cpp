@@ -22,7 +22,7 @@
 #define MESSAGE (const unsigned char *) "test"
 #define MESSAGE_LEN 32
 int n = 100; /* number of users */
-int j =50; /* test index in verification */
+int j =n/2; /* test index in verification */
 
 using namespace std;
 
@@ -98,14 +98,14 @@ void test_vf_no_padding() { /* Vacuum from scratch */
     */
     getrusage(RUSAGE_SELF, &keygen_start);
     /* here is the output of measurement */
-    random_gen(n, insKey, rd); /* Define Dv */
     getrusage(RUSAGE_SELF, &keygen_end);
 
 
     /* Sign */ 
 
     getrusage(RUSAGE_SELF, &sign_start);
-
+    random_gen(n, insKey, rd); /* Define Dv */
+ 
     unsigned char hash[crypto_generichash_BYTES];
     /*
     unsigned char value[sizeof(insKey)];
@@ -148,10 +148,7 @@ void test_vf_no_padding() { /* Vacuum from scratch */
     getrusage(RUSAGE_SELF, &sign_end);
     printf("T: %d\n", T); /* for debug */
 
-    /* cast from AMQ to message as m||T 
-    MESSAGE << T;
-    */
-    cout << "Load factor = " << vf.get_load_factor() << endl;
+
 
 
     /* Verify */
@@ -180,14 +177,14 @@ void test_vf_no_padding() { /* Vacuum from scratch */
     printf("Setup (user-time) \n");
     printf("Setup (sys-time) \n");
 
-    printf("KeyGen (user-time) \t%lf\n");
-    printf("KeyGen (sys-time) \t%lf\n");
+    printf("KeyGen (user-time) \n");
+    printf("KeyGen (sys-time) \n");
 
-    printf("Sign (user-time) \t%lf\n");
-    printf("Sign (sys-time) \t%lf\n");
+    printf("Sign (user-time) \n");
+    printf("Sign (sys-time) \n");
 
-    printf("Verify (user-time) \t%lf\n");
-    printf("Verify (sys-time) \t%lf\n");
+    printf("Verify (user-time) \n");
+    printf("Verify (sys-time) \n");
 
 
     printf("%lf\n",

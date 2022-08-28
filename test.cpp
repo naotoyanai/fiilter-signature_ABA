@@ -129,9 +129,11 @@ void test_vf_no_padding() { /* Vacuum from scratch */
 
     for (int i = 0; i < n; i++) 
         if (vf.lookup(insKey[i]) == false) { /* checking insKey[i] by Lookup */
+        /*
             cout << "False negative happens at " << i << "th key: " << insKey[i] << endl;
             printf("incrrect AMQ!\n");
-            /*break;*/
+            break;
+        */
         }
 
     getrusage(RUSAGE_SELF, &vrfy_end);

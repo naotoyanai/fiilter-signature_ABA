@@ -19,9 +19,10 @@
 #define MESSAGE (const unsigned char *) "test"
 #define MESSAGE_LEN 5
 
-int n = 100; /* number of inserted keys --> the size of Dv */
+int n = 1000000; /* number of inserted keys --> the size of Dv */
 int q = 10000000; /* number of queries */ 
-
+int slots = 8; /* slots per backets */
+int max_kick = 400; /* max kick steps */
 
 using namespace std;
 
@@ -97,7 +98,7 @@ void test_vf_no_padding() { /* Vacuum from scratch */
     printf("%s\n", signed_message);
 
     
-    vf.init(n, 4, 400); /* vf.init(max_item_numbers, slots per bucket, max_kick_steps) 
+    vf.init(n, slots, max_kick); /* vf.init(max_item_numbers, slots per bucket, max_kick_steps) 
         --> Gen of Vacuum */
 
     for (int i = 0; i < n; i++)
@@ -139,14 +140,14 @@ void test_vf_no_padding() { /* Vacuum from scratch */
     printf("Setup (user-time) \n");
     printf("Setup (sys-time) \n");
 
-    printf("KeyGen (user-time) \t%lf\n");
-    printf("KeyGen (sys-time) \t%lf\n");
+    printf("KeyGen (user-time) \n");
+    printf("KeyGen (sys-time) \n");
 
-    printf("Sign (user-time) \t%lf\n");
-    printf("Sign (sys-time) \t%lf\n");
+    printf("Sign (user-time) \n");
+    printf("Sign (sys-time) \n");
 
-    printf("Verify (user-time) \t%lf\n");
-    printf("Verify (sys-time) \t%lf\n");
+    printf("Verify (user-time) \n");
+    printf("Verify (sys-time) \n");
 
 
     printf("%lf\n",
